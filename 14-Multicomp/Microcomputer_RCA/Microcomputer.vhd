@@ -46,17 +46,17 @@ entity Microcomputer is
 		rts2			: out std_logic;
 		cts2			: in std_logic;
 		
---				TY3
---		rxd3			: in std_logic;
---		txd3			: out std_logic;
---		rts3			: out std_logic;
---		cts3			: in std_logic;
+--				TTY3
+		rxd3			: in std_logic;
+		txd3			: out std_logic;
+		rts3			: out std_logic;
+		cts3			: in std_logic;
 
 --				TTY4
-		rxd4			: in std_logic;
-		txd4			: out std_logic;
-		rts4			: out std_logic;
-		cts4			: in std_logic;
+--		rxd4			: in std_logic;
+--		txd4			: out std_logic;
+--		rts4			: out std_logic;
+--		cts4			: in std_logic;
 
 --				RCA terminal
 		videoSync	: out std_logic;
@@ -129,11 +129,11 @@ architecture struct of Microcomputer is
 	signal n_brg2					: std_logic :='1';
 	signal sClk2					: std_logic;
 	
---	signal interface3DataOut	: std_logic_vector(7 downto 0);
---	signal n_int3					: std_logic :='1';
---	signal n_interface3CS		: std_logic :='1';
---	signal n_brg3					: std_logic :='1';
---	signal sClk3					: std_logic;
+	signal interface3DataOut	: std_logic_vector(7 downto 0);
+	signal n_int3					: std_logic :='1';
+	signal n_interface3CS		: std_logic :='1';
+	signal n_brg3					: std_logic :='1';
+	signal sClk3					: std_logic;
 	
 	signal interface4DataOut	: std_logic_vector(7 downto 0);
 	signal n_int4					: std_logic :='1';
@@ -324,62 +324,62 @@ port map (
 --		dataIn 	=> cpuDataOut
 --	);
 
---	io3 : entity work.bufferedUART		-- TTY3
---	port map(
---		clk 		=> clk,
---		n_wr 		=> n_interface3CS or n_ioWR,
---		n_rd 		=> n_interface3CS or n_ioRD,
---		n_int 	=> n_int3,
---		regSel 	=> cpuAddress(0),
---		dataIn 	=> cpuDataOut,
---		dataOut 	=> interface3DataOut,
---		rxClock 	=> sClk3,
---		txClock 	=> sClk3,
---		rxd 		=> rxd3,
---		txd 		=> txd3,
---		n_cts		=> cts3,
---		n_dcd 	=> '0',
---		n_rts 	=> rts3
---	);
---	
---	brg3 : entity work.brg
---	port map(
---		clk      => clk,
---		n_reset  => n_reset,
---		baud_clk => sClk3, 
---		n_wr 		=> n_ioWR,
---		n_cs 		=> n_brg3,
---		dataIn 	=> cpuDataOut
---	);
-
-	io4 : entity work.bufferedUART		-- TTY4
+	io3 : entity work.bufferedUART		-- TTY3
 	port map(
 		clk 		=> clk,
-		n_wr 		=> n_interface4CS or n_ioWR,
-		n_rd 		=> n_interface4CS or n_ioRD,
-		n_int 	=> n_int4,
+		n_wr 		=> n_interface3CS or n_ioWR,
+		n_rd 		=> n_interface3CS or n_ioRD,
+		n_int 	=> n_int3,
 		regSel 	=> cpuAddress(0),
 		dataIn 	=> cpuDataOut,
-		dataOut 	=> interface4DataOut,
-		rxClock 	=> sClk4,
-		txClock 	=> sClk4,
-		rxd 		=> rxd4,
-		txd 		=> txd4,
---		n_cts		=> cts4,
-		n_cts 	=> '0',		-- ESP8266 does not support RTS
+		dataOut 	=> interface3DataOut,
+		rxClock 	=> sClk3,
+		txClock 	=> sClk3,
+		rxd 		=> rxd3,
+		txd 		=> txd3,
+		n_cts		=> cts3,
 		n_dcd 	=> '0',
-		n_rts		=> rts4		-- the RTS signal is used to reset ESP8266
+		n_rts 	=> rts3
 	);
 	
-	brg4 : entity work.brg
+	brg3 : entity work.brg
 	port map(
 		clk      => clk,
 		n_reset  => n_reset,
-		baud_clk => sClk4, 
+		baud_clk => sClk3, 
 		n_wr 		=> n_ioWR,
-		n_cs 		=> n_brg4,
+		n_cs 		=> n_brg3,
 		dataIn 	=> cpuDataOut
 	);
+
+--	io4 : entity work.bufferedUART		-- TTY4
+--	port map(
+--		clk 		=> clk,
+--		n_wr 		=> n_interface4CS or n_ioWR,
+--		n_rd 		=> n_interface4CS or n_ioRD,
+--		n_int 	=> n_int4,
+--		regSel 	=> cpuAddress(0),
+--		dataIn 	=> cpuDataOut,
+--		dataOut 	=> interface4DataOut,
+--		rxClock 	=> sClk4,
+--		txClock 	=> sClk4,
+--		rxd 		=> rxd4,
+--		txd 		=> txd4,
+--x		n_cts		=> cts4,
+--		n_cts 	=> '0',		-- ESP8266 does not support RTS
+--		n_dcd 	=> '0',
+--		n_rts		=> rts4		-- the RTS signal is used to reset ESP8266
+--	);
+	
+--	brg4 : entity work.brg
+--	port map(
+--		clk      => clk,
+--		n_reset  => n_reset,
+--		baud_clk => sClk4, 
+--		n_wr 		=> n_ioWR,
+--		n_cs 		=> n_brg4,
+--		dataIn 	=> cpuDataOut
+--	);
 
 	sd1 : entity work.sd_controller 
 	port map(
@@ -408,12 +408,12 @@ port map (
 	n_monRomCS 		<= '0' when cpuAddress(15 downto 11) = "00000" and n_RomActive = '0' else '1'; 					-- 2K low memory
 	n_brg1 			<= '0' when cpuAddress(7 downto 0) = "01111011" and (n_ioWR='0' or n_ioRD = '0') else '1'; 	-- 1 Byte 	$7B
 --	n_brg2 			<= '0' when cpuAddress(7 downto 0) = "01111100" and (n_ioWR='0' or n_ioRD = '0') else '1'; 	-- 1 Byte 	$7C
---	n_brg3 			<= '0' when cpuAddress(7 downto 0) = "01111101" and (n_ioWR='0' or n_ioRD = '0') else '1'; 	-- 1 Byte 	$7D
-	n_brg4 			<= '0' when cpuAddress(7 downto 0) = "01111110" and (n_ioWR='0' or n_ioRD = '0') else '1'; 	-- 1 Byte 	$7E
+	n_brg3 			<= '0' when cpuAddress(7 downto 0) = "01111101" and (n_ioWR='0' or n_ioRD = '0') else '1'; 	-- 1 Byte 	$7D
+--	n_brg4 			<= '0' when cpuAddress(7 downto 0) = "01111110" and (n_ioWR='0' or n_ioRD = '0') else '1'; 	-- 1 Byte 	$7E
 	n_interface1CS <= '0' when cpuAddress(7 downto 1) = "1000000" and (n_ioWR='0' or n_ioRD = '0') else '1'; 	-- 2 Bytes 	$80-$81
 	n_interface2CS <= '0' when cpuAddress(7 downto 1) = "1000001" and (n_ioWR='0' or n_ioRD = '0') else '1'; 	-- 2 Bytes 	$82-$83
---	n_interface3CS <= '0' when cpuAddress(7 downto 1) = "1000010" and (n_ioWR='0' or n_ioRD = '0') else '1'; 	-- 2 Bytes 	$84-$85
-	n_interface4CS <= '0' when cpuAddress(7 downto 1) = "1000011" and (n_ioWR='0' or n_ioRD = '0') else '1'; 	-- 2 Bytes 	$86-$87
+	n_interface3CS <= '0' when cpuAddress(7 downto 1) = "1000010" and (n_ioWR='0' or n_ioRD = '0') else '1'; 	-- 2 Bytes 	$84-$85
+--	n_interface4CS <= '0' when cpuAddress(7 downto 1) = "1000011" and (n_ioWR='0' or n_ioRD = '0') else '1'; 	-- 2 Bytes 	$86-$87
 	n_sdCardCS 		<= '0' when cpuAddress(7 downto 3) = "10001" and (n_ioWR='0' or n_ioRD = '0') else '1'; 		-- 8 Bytes 	$88-$8F
 	n_mmuCS 			<= '0' when cpuAddress(7 downto 3) = "11111" and (n_ioWR='0' or n_ioRD = '0') else '1'; 		-- 8 bytes 	$F8-$FF
 	
@@ -424,8 +424,8 @@ port map (
 	cpuDataIn <=
 		interface1DataOut when n_interface1CS = '0' else
 		interface2DataOut when n_interface2CS = '0' else
---		interface3DataOut when n_interface3CS = '0' else
-		interface4DataOut when n_interface4CS = '0' else
+		interface3DataOut when n_interface3CS = '0' else
+--		interface4DataOut when n_interface4CS = '0' else
 		sdCardDataOut when n_sdCardCS = '0' else
 		monRomData when n_monRomCS = '0' else
 		sramData when n_externalRam1CS= '0' else
